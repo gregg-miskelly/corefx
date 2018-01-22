@@ -1189,8 +1189,8 @@ namespace System.Runtime.InteropServices.ComTypes
     [System.Runtime.InteropServices.StructLayoutAttribute(System.Runtime.InteropServices.LayoutKind.Sequential)]
     public partial struct FILETIME
     {
-        public int dwHighDateTime;
         public int dwLowDateTime;
+        public int dwHighDateTime;
     }
     [System.ComponentModel.EditorBrowsableAttribute((System.ComponentModel.EditorBrowsableState)(1))]
     [System.Runtime.InteropServices.StructLayoutAttribute(System.Runtime.InteropServices.LayoutKind.Sequential)]
@@ -1427,19 +1427,23 @@ namespace System.Runtime.InteropServices.ComTypes
     }
     [System.ComponentModel.EditorBrowsableAttribute((System.ComponentModel.EditorBrowsableState)(1))]
     [System.Runtime.InteropServices.InterfaceTypeAttribute((System.Runtime.InteropServices.ComInterfaceType)(1))]
+    [Guid("0000000c-0000-0000-C000-000000000046")]
     public partial interface IStream
     {
-        void Clone(out System.Runtime.InteropServices.ComTypes.IStream ppstm);
+        // ISequentialStream portion
+        void Read([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1), Out] Byte[] pv, int cb, IntPtr pcbRead);
+        void Write([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)] Byte[] pv, int cb, IntPtr pcbWritten);
+
+        // IStream portion
+        void Seek(Int64 dlibMove, int dwOrigin, IntPtr plibNewPosition);
+        void SetSize(Int64 libNewSize);
+        void CopyTo(IStream pstm, Int64 cb, IntPtr pcbRead, IntPtr pcbWritten);
         void Commit(int grfCommitFlags);
-        void CopyTo(System.Runtime.InteropServices.ComTypes.IStream pstm, long cb, System.IntPtr pcbRead, System.IntPtr pcbWritten);
-        void LockRegion(long libOffset, long cb, int dwLockType);
-        void Read(byte[] pv, int cb, System.IntPtr pcbRead);
         void Revert();
-        void Seek(long dlibMove, int dwOrigin, System.IntPtr plibNewPosition);
-        void SetSize(long libNewSize);
-        void Stat(out System.Runtime.InteropServices.ComTypes.STATSTG pstatstg, int grfStatFlag);
-        void UnlockRegion(long libOffset, long cb, int dwLockType);
-        void Write(byte[] pv, int cb, System.IntPtr pcbWritten);
+        void LockRegion(Int64 libOffset, Int64 cb, int dwLockType);
+        void UnlockRegion(Int64 libOffset, Int64 cb, int dwLockType);
+        void Stat(out STATSTG pstatstg, int grfStatFlag);
+        void Clone(out IStream ppstm);
     }
     [System.ComponentModel.EditorBrowsableAttribute((System.ComponentModel.EditorBrowsableState)(1))]
     [System.Runtime.InteropServices.InterfaceTypeAttribute((System.Runtime.InteropServices.ComInterfaceType)(1))]
@@ -1587,17 +1591,17 @@ namespace System.Runtime.InteropServices.ComTypes
     [System.Runtime.InteropServices.StructLayoutAttribute(System.Runtime.InteropServices.LayoutKind.Sequential)]
     public partial struct STATSTG
     {
-        public System.Runtime.InteropServices.ComTypes.FILETIME atime;
-        public long cbSize;
-        public System.Guid clsid;
-        public System.Runtime.InteropServices.ComTypes.FILETIME ctime;
-        public int grfLocksSupported;
-        public int grfMode;
-        public int grfStateBits;
-        public System.Runtime.InteropServices.ComTypes.FILETIME mtime;
-        public string pwcsName;
-        public int reserved;
+        public String pwcsName;
         public int type;
+        public Int64 cbSize;
+        public FILETIME mtime;
+        public FILETIME ctime;
+        public FILETIME atime;
+        public int grfMode;
+        public int grfLocksSupported;
+        public Guid clsid;
+        public int grfStateBits;
+        public int reserved;
     }
     [System.ComponentModel.EditorBrowsableAttribute((System.ComponentModel.EditorBrowsableState)(1))]
     [System.Runtime.InteropServices.StructLayoutAttribute(System.Runtime.InteropServices.LayoutKind.Sequential)]
